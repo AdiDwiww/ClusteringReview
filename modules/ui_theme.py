@@ -312,34 +312,53 @@ def apply_custom_css():
             box-shadow: none !important;
         }
         
-        button[kind="primary"] {
-            background-color: var(--text-primary) !important;
+        /* Streamlit Button Overrides — use data-testid (works in all Streamlit versions) */
+        button[data-testid="baseButton-primary"],
+        div[data-testid="stButton"] > button[kind="primary"],
+        .stButton > button[type="submit"] {
+            background-color: #09090B !important;
             color: #FFFFFF !important;
-            border: 1px solid var(--text-primary) !important;
+            border: 1px solid #09090B !important;
             border-radius: var(--radius-sm) !important;
             font-weight: 600 !important;
             font-size: 0.88rem !important;
+            font-family: 'Inter', sans-serif !important;
             box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important;
             transition: all 0.15s ease !important;
         }
         
-        button[kind="primary"]:hover {
+        button[data-testid="baseButton-primary"]:hover {
             background-color: #27272A !important;
             border-color: #27272A !important;
+            color: #FFFFFF !important;
         }
         
-        button[kind="secondary"] {
+        button[data-testid="baseButton-primary"] p,
+        button[data-testid="baseButton-primary"] span:not([class*="material"]) {
+            color: #FFFFFF !important;
+            font-family: 'Inter', sans-serif !important;
+        }
+        
+        button[data-testid="baseButton-secondary"],
+        div[data-testid="stButton"] > button[kind="secondary"] {
             background-color: var(--bg-surface) !important;
             color: var(--text-primary) !important;
             border: 1px solid var(--border-subtle) !important;
             border-radius: var(--radius-sm) !important;
             font-weight: 500 !important;
             font-size: 0.88rem !important;
+            font-family: 'Inter', sans-serif !important;
         }
         
-        button[kind="secondary"]:hover {
+        button[data-testid="baseButton-secondary"]:hover {
             border-color: var(--border-hover) !important;
             background-color: var(--bg-subtle) !important;
+        }
+        
+        button[data-testid="baseButton-secondary"] p,
+        button[data-testid="baseButton-secondary"] span:not([class*="material"]) {
+            color: var(--text-primary) !important;
+            font-family: 'Inter', sans-serif !important;
         }
 
         /* Streamlit Tabs Styling */
