@@ -32,7 +32,17 @@ def apply_custom_css():
         }
 
         /* Base Typography & Background */
-        html, body, [class*="st-"], .stApp {
+        html, body, .stApp,
+        .stApp p, .stApp div, .stApp span, .stApp h1, .stApp h2, .stApp h3, .stApp h4, .stApp h5, .stApp h6,
+        .stApp label, .stApp input, .stApp textarea, .stApp select, .stApp button,
+        div[data-testid="stMarkdownContainer"],
+        div[data-testid="stText"],
+        div[data-testid="stCaption"],
+        div[data-testid="stMetric"],
+        div[data-testid="stAlert"],
+        div[data-testid="stDataFrame"],
+        div[data-testid="stTable"],
+        section[data-testid="stSidebar"] {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
             color: var(--text-primary);
         }
