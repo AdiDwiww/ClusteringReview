@@ -15,7 +15,7 @@ from modules import (
 
 # 1. Konfigurasi Halaman Streamlit (No Emoji in page_icon)
 st.set_page_config(
-    page_title="Review Intelligence — AI SaaS Analytics",
+    page_title="Clustering Review",
     page_icon="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f4ca.png",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -36,11 +36,7 @@ with st.sidebar:
             </div>
             <div>
                 <div style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.05rem; font-weight: 700; color: #09090B; letter-spacing: -0.02em; line-height: 1.2;">
-                    Review Intelligence
-                </div>
-                <div style="display: flex; align-items: center; gap: 0.35rem; margin-top: 0.15rem;">
-                    <span style="font-size: 0.65rem; font-weight: 700; color: #4F46E5; background: #EEF2FF; padding: 0.1rem 0.35rem; border-radius: 4px; letter-spacing: 0.06em;">AI ANALYTICS</span>
-                    <span style="font-size: 0.65rem; color: #71717A;">v1.0</span>
+                    Clustering Review
                 </div>
             </div>
         </div>

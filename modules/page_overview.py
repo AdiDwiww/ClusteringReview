@@ -8,7 +8,7 @@ from modules.icons import icon_svg
 
 def show(df: pd.DataFrame):
     render_workspace_header(
-        title="Review Intelligence Workspace",
+        title="Clustering Review Workspace",
         subtitle="Analisis clustering ulasan dari 15 aplikasi produktivitas Google Play Store menggunakan representasi Sentence Transformers dan algoritma K-Means (k=10).",
         category="Analytics Overview",
         icon="layout-dashboard"

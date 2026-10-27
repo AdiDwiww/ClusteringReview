@@ -362,7 +362,7 @@ def apply_custom_css():
     </style>
     """, unsafe_allow_html=True)
 
-def render_workspace_header(title: str, subtitle: str, category: str = "AI Review Intelligence", icon: str = "sparkles"):
+def render_workspace_header(title: str, subtitle: str, category: str = "Clustering Review", icon: str = "sparkles"):
     """
     Header halaman modern bergaya Linear / Vercel dengan eyebrow tag, judul tebal sans-serif, dan subtitle informatif.
     """
