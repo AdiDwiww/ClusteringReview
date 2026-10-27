@@ -32,9 +32,10 @@ def apply_custom_css():
         }
 
         /* Base Typography & Background */
+        /* NOTE: intentionally exclude span/button to preserve Material Symbols icon font */
         html, body, .stApp,
-        .stApp p, .stApp div, .stApp span, .stApp h1, .stApp h2, .stApp h3, .stApp h4, .stApp h5, .stApp h6,
-        .stApp label, .stApp input, .stApp textarea, .stApp select, .stApp button,
+        .stApp p, .stApp div, .stApp h1, .stApp h2, .stApp h3, .stApp h4, .stApp h5, .stApp h6,
+        .stApp label, .stApp input, .stApp textarea, .stApp select,
         div[data-testid="stMarkdownContainer"],
         div[data-testid="stText"],
         div[data-testid="stCaption"],
@@ -45,6 +46,16 @@ def apply_custom_css():
         section[data-testid="stSidebar"] {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
             color: var(--text-primary);
+        }
+
+        /* Explicitly preserve Material Symbols for Streamlit internal icon spans/buttons */
+        .stApp span[data-baseweb],
+        .stApp [class*="material-symbols"],
+        button[data-testid] span,
+        div[data-testid="stExpander"] summary span,
+        div[data-testid="stExpander"] button span,
+        .stApp button span {
+            font-family: 'Material Symbols Rounded', 'Material Symbols Outlined', sans-serif !important;
         }
         
         .stApp {
