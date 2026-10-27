@@ -48,14 +48,14 @@ def apply_custom_css():
             color: var(--text-primary);
         }
 
-        /* Explicitly preserve Material Symbols for Streamlit internal icon spans/buttons */
+        /* Explicitly preserve Material Symbols for Streamlit internal icon spans */
         .stApp span[data-baseweb],
         .stApp [class*="material-symbols"],
-        button[data-testid] span,
-        div[data-testid="stExpander"] summary span,
-        div[data-testid="stExpander"] button span,
-        .stApp button span {
-            font-family: 'Material Symbols Rounded', 'Material Symbols Outlined', sans-serif !important;
+        [data-testid="stIconMaterial"],
+        div[data-testid="stExpander"] summary span[class*="st-"],
+        div[data-testid="stExpander"] summary [class*="material"],
+        button[data-testid="stSidebarCollapseButton"] span {
+            font-family: 'Material Symbols Rounded', 'Material Symbols Outlined' !important;
         }
         
         .stApp {
@@ -312,53 +312,79 @@ def apply_custom_css():
             box-shadow: none !important;
         }
         
-        /* Streamlit Button Overrides — use data-testid (works in all Streamlit versions) */
-        button[data-testid="baseButton-primary"],
-        div[data-testid="stButton"] > button[kind="primary"],
-        .stButton > button[type="submit"] {
-            background-color: #09090B !important;
-            color: #FFFFFF !important;
-            border: 1px solid #09090B !important;
+        /* Streamlit Button Overrides — Comprehensive selectors for all Streamlit versions */
+        div[data-testid="stButton"] button,
+        button[data-testid*="stBaseButton"],
+        button[data-testid*="baseButton"] {
             border-radius: var(--radius-sm) !important;
+            font-size: 0.92rem !important;
             font-weight: 600 !important;
-            font-size: 0.88rem !important;
-            font-family: 'Inter', sans-serif !important;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important;
-            transition: all 0.15s ease !important;
+            padding: 0.55rem 1.25rem !important;
+            transition: all 0.15s ease-in-out !important;
         }
-        
-        button[data-testid="baseButton-primary"]:hover {
-            background-color: #27272A !important;
-            border-color: #27272A !important;
+
+        /* Primary Button: Brand Indigo with High-Contrast Crisp White Text */
+        div[data-testid="stButton"] button[data-testid*="primary"],
+        button[data-testid="stBaseButton-primary"],
+        button[data-testid="baseButton-primary"],
+        button[kind="primary"] {
+            background-color: #4F46E5 !important;
+            background: #4F46E5 !important;
+            border: 1px solid #4338CA !important;
             color: #FFFFFF !important;
+            box-shadow: 0 1px 3px rgba(79, 70, 229, 0.25) !important;
         }
         
-        button[data-testid="baseButton-primary"] p,
-        button[data-testid="baseButton-primary"] span:not([class*="material"]) {
+        div[data-testid="stButton"] button[data-testid*="primary"]:hover,
+        button[data-testid="stBaseButton-primary"]:hover,
+        button[data-testid="baseButton-primary"]:hover,
+        button[kind="primary"]:hover {
+            background-color: #4338CA !important;
+            background: #4338CA !important;
+            border-color: #3730A3 !important;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35) !important;
+        }
+        
+        /* Force ALL text / p / span / div inside Primary Button to be pure WHITE Inter */
+        div[data-testid="stButton"] button[data-testid*="primary"] *,
+        button[data-testid="stBaseButton-primary"] *,
+        button[data-testid="baseButton-primary"] *,
+        button[kind="primary"] * {
             color: #FFFFFF !important;
-            font-family: 'Inter', sans-serif !important;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+            font-weight: 600 !important;
+            font-size: 0.92rem !important;
         }
         
+        /* Secondary Button */
+        div[data-testid="stButton"] button[data-testid*="secondary"],
+        button[data-testid="stBaseButton-secondary"],
         button[data-testid="baseButton-secondary"],
-        div[data-testid="stButton"] > button[kind="secondary"] {
-            background-color: var(--bg-surface) !important;
-            color: var(--text-primary) !important;
-            border: 1px solid var(--border-subtle) !important;
-            border-radius: var(--radius-sm) !important;
+        button[kind="secondary"] {
+            background-color: #FFFFFF !important;
+            background: #FFFFFF !important;
+            border: 1px solid #E4E4E7 !important;
+            color: #09090B !important;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
+        }
+        
+        div[data-testid="stButton"] button[data-testid*="secondary"]:hover,
+        button[data-testid="stBaseButton-secondary"]:hover,
+        button[data-testid="baseButton-secondary"]:hover,
+        button[kind="secondary"]:hover {
+            border-color: #D4D4D8 !important;
+            background-color: #F4F4F5 !important;
+            background: #F4F4F5 !important;
+        }
+        
+        div[data-testid="stButton"] button[data-testid*="secondary"] *,
+        button[data-testid="stBaseButton-secondary"] *,
+        button[data-testid="baseButton-secondary"] *,
+        button[kind="secondary"] * {
+            color: #09090B !important;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
             font-weight: 500 !important;
-            font-size: 0.88rem !important;
-            font-family: 'Inter', sans-serif !important;
-        }
-        
-        button[data-testid="baseButton-secondary"]:hover {
-            border-color: var(--border-hover) !important;
-            background-color: var(--bg-subtle) !important;
-        }
-        
-        button[data-testid="baseButton-secondary"] p,
-        button[data-testid="baseButton-secondary"] span:not([class*="material"]) {
-            color: var(--text-primary) !important;
-            font-family: 'Inter', sans-serif !important;
+            font-size: 0.9rem !important;
         }
 
         /* Streamlit Tabs Styling */
