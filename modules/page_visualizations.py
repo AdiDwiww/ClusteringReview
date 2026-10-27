@@ -3,27 +3,29 @@ import pandas as pd
 import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
-from modules.ui_theme import render_hero_banner
-from modules.cluster_info import CLUSTER_METADATA, APP_NAME_MAP
+from modules.ui_theme import render_workspace_header, render_section_title
+from modules.cluster_info import CLUSTER_METADATA
 from modules.data_loader import load_pca_coordinates
+from modules.icons import icon_svg
 
 def show(df: pd.DataFrame):
-    render_hero_banner(
-        title="Visualisasi Interaktif & Analisis Multidimensi",
-        subtitle="Eksplorasi grafis komparasi klaster, perbandingan rating aplikasi, distribusi skor bertingkat, dan proyeksi reduksi dimensi 2D PCA.",
-        tag="Interactive Visualizations"
+    render_workspace_header(
+        title="Visualisasi Multidimensi & Komparasi",
+        subtitle="Analisis grafis perbandingan klaster, komparasi performa aplikasi, distribusi skor bertingkat, dan proyeksi reduksi dimensi 2D PCA.",
+        category="Data Visualizations",
+        icon="bar-chart-3"
     )
     
     tab1, tab2, tab3, tab4 = st.tabs([
-        "📊 Distribusi Klaster & Rating",
-        "📱 Komparasi 15 Aplikasi",
-        "🎯 Proyeksi Reduksi Dimensi 2D (PCA)",
-        "📦 Boxplot Distribusi Skor"
+        "Distribusi Klaster & Rating",
+        "Komparasi 15 Aplikasi",
+        "Proyeksi Reduksi Dimensi 2D (PCA)",
+        "Boxplot Distribusi Skor"
     ])
     
     # ---------------- TAB 1: DISTRIBUSI KLASTER & RATING ----------------
     with tab1:
-        st.markdown("### 1. Bar Chart: Jumlah Ulasan per Klaster")
+        render_section_title("Jumlah Ulasan per Klaster", "Ukuran relatif masing-masing kelompok tematik K-Means.", icon="bar-chart-3")
         
         c_counts = df.groupby('cluster_semantik_10').size().reset_index(name='Jumlah Ulasan')
         c_counts['Klaster'] = c_counts['cluster_semantik_10'].apply(
@@ -31,7 +33,7 @@ def show(df: pd.DataFrame):
         )
         c_counts['Persentase'] = (c_counts['Jumlah Ulasan'] / len(df) * 100).round(1)
         c_counts['Warna'] = c_counts['cluster_semantik_10'].apply(
-            lambda x: CLUSTER_METADATA.get(x, {}).get('warna', '#3B82F6')
+            lambda x: CLUSTER_METADATA.get(x, {}).get('warna', '#4F46E5')
         )
         c_counts = c_counts.sort_values('Jumlah Ulasan', ascending=True)
         
@@ -42,65 +44,66 @@ def show(df: pd.DataFrame):
                 orientation='h',
                 text=[f"{n:,} ({p}%)" for n, p in zip(c_counts['Jumlah Ulasan'], c_counts['Persentase'])],
                 textposition='outside',
-                marker=dict(color=c_counts['Warna'].tolist())
+                marker=dict(color=c_counts['Warna'].tolist(), line=dict(color='#E4E4E7', width=1))
             )
         ])
         fig_bar_count.update_layout(
             margin=dict(l=10, r=40, t=10, b=10),
-            height=360,
-            xaxis_title="Jumlah Ulasan",
-            yaxis_title="",
+            height=340,
+            xaxis=dict(title="Jumlah Ulasan", showgrid=True, gridcolor='#F4F4F5', tickfont=dict(size=11, color='#71717A')),
+            yaxis=dict(title="", tickfont=dict(size=11, color='#71717A')),
             plot_bgcolor='rgba(0,0,0,0)',
-            paper_bgcolor='rgba(0,0,0,0)'
+            paper_bgcolor='rgba(0,0,0,0)',
+            font=dict(family="Inter, sans-serif", size=11)
         )
-        st.plotly_chart(fig_bar_count, use_container_width=True)
+        st.plotly_chart(fig_bar_count, width='stretch')
         
-        st.markdown("<div style='height: 1.2rem;'></div>", unsafe_allow_html=True)
+        st.markdown("<div style='height: 1.25rem;'></div>", unsafe_allow_html=True)
         
-        st.markdown("### 2. Stacked Bar Chart: Komposisi Rating per Klaster")
-        st.caption("Memvisualisasikan proporsi rating 1 hingga 5 pada setiap klaster untuk melihat struktur kepuasan vs keluhan.")
+        render_section_title("Komposisi Rating Bertingkat per Klaster", "Proporsi skor rating 1 hingga 5 pada setiap klaster untuk melihat pola keluhan vs kepuasan.", icon="layers")
         
         stacked_data = df.groupby(['cluster_semantik_10', 'score']).size().unstack(fill_value=0)
-        # Hitung persentase baris
         stacked_pct = stacked_data.div(stacked_data.sum(axis=1), axis=0) * 100
         
         rating_colors = {
-            1: '#EF4444', # Merah
-            2: '#F97316', # Oranye
-            3: '#FBBF24', # Kuning
-            4: '#34D399', # Hijau Muda
-            5: '#10B981'  # Hijau Tua
+            1: '#EF4444',
+            2: '#F97316',
+            3: '#EAB308',
+            4: '#22C55E',
+            5: '#10B981'
         }
         
         fig_stacked = go.Figure()
-        cluster_labels = [f"C{i} - {CLUSTER_METADATA[i]['name'][:15]}" for i in range(10)]
+        cluster_labels = [f"C{i}: {CLUSTER_METADATA[i]['name'][:14]}" for i in range(10)]
         
         for r in range(1, 6):
             fig_stacked.add_trace(go.Bar(
-                name=f"Rating {r} ★",
+                name=f"Rating {r}",
                 x=cluster_labels,
                 y=stacked_pct[r].round(1),
                 marker_color=rating_colors[r],
-                text=[f"{val:.0f}%" if val > 5 else "" for val in stacked_pct[r]],
+                text=[f"{val:.0f}%" if val > 6 else "" for val in stacked_pct[r]],
                 textposition='inside',
-                hovertemplate="<b>%{x}</b><br>Rating " + str(r) + "★: %{y:.1f}%<extra></extra>"
+                hovertemplate="<b>%{x}</b><br>Rating " + str(r) + ": %{y:.1f}%<extra></extra>"
             ))
             
         fig_stacked.update_layout(
             barmode='stack',
-            margin=dict(l=10, r=10, t=20, b=50),
-            height=380,
+            margin=dict(l=10, r=10, t=10, b=60),
+            height=360,
             xaxis_tickangle=-25,
-            yaxis=dict(title="Persentase (%)", range=[0, 100]),
-            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+            xaxis=dict(tickfont=dict(size=11, color='#71717A')),
+            yaxis=dict(title="Persentase (%)", range=[0, 100], showgrid=True, gridcolor='#F4F4F5', tickfont=dict(size=11, color='#71717A')),
+            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1, font=dict(size=11, color='#71717A')),
             plot_bgcolor='rgba(0,0,0,0)',
-            paper_bgcolor='rgba(0,0,0,0)'
+            paper_bgcolor='rgba(0,0,0,0)',
+            font=dict(family="Inter, sans-serif", size=11)
         )
-        st.plotly_chart(fig_stacked, use_container_width=True)
+        st.plotly_chart(fig_stacked, width='stretch')
         
     # ---------------- TAB 2: KOMPARASI 15 APLIKASI ----------------
     with tab2:
-        st.markdown("### 📱 Perbandingan Jumlah Ulasan & Rata-rata Rating antar Aplikasi")
+        render_section_title("Peringkat Rata-rata Rating per Aplikasi", "Perbandingan kepuasan pengguna lintas 15 aplikasi produktivitas.", icon="smartphone")
         
         app_stats = df.groupby('app_name').agg(
             total_ulasan=('content', 'count'),
@@ -118,35 +121,39 @@ def show(df: pd.DataFrame):
                 y='app_name',
                 orientation='h',
                 color='mean_score',
-                color_continuous_scale='RdYlGn',
-                labels={'mean_score': 'Rata-rata Rating', 'app_name': 'Aplikasi'},
-                title="Peringkat Rata-rata Rating per Aplikasi"
+                color_continuous_scale='Teal',
+                labels={'mean_score': 'Rata-rata Rating', 'app_name': 'Aplikasi'}
             )
             fig_app_bar.update_layout(
-                margin=dict(l=10, r=10, t=40, b=10),
-                height=450,
-                yaxis=dict(autorange="reversed"),
+                margin=dict(l=10, r=10, t=10, b=10),
+                height=430,
+                yaxis=dict(autorange="reversed", tickfont=dict(size=11, color='#71717A')),
+                xaxis=dict(showgrid=True, gridcolor='#F4F4F5', tickfont=dict(size=11, color='#71717A')),
                 plot_bgcolor='rgba(0,0,0,0)',
-                paper_bgcolor='rgba(0,0,0,0)'
+                paper_bgcolor='rgba(0,0,0,0)',
+                font=dict(family="Inter, sans-serif", size=11),
+                coloraxis_showscale=False
             )
-            st.plotly_chart(fig_app_bar, use_container_width=True)
+            st.plotly_chart(fig_app_bar, width='stretch')
             
         with col_app2:
-            st.markdown("#### Detail Tabel Ulasan per Aplikasi")
+            st.markdown("""
+            <div style="font-size: 0.82rem; font-weight: 600; color: #71717A; text-transform: uppercase; margin-bottom: 0.4rem;">
+                Tabel Rangkuman Metrik Aplikasi
+            </div>
+            """, unsafe_allow_html=True)
             app_display = app_stats.copy()
             app_display.columns = ['Nama Aplikasi', 'Total Ulasan', 'Rata-rata', 'Rating 1-2 (%)', 'Rating 4-5 (%)']
             app_display['Total Ulasan'] = app_display['Total Ulasan'].apply(lambda x: f"{x:,}")
-            app_display['Rata-rata'] = app_display['Rata-rata'].round(2).apply(lambda x: f"{x:.2f} ★")
+            app_display['Rata-rata'] = app_display['Rata-rata'].round(2).apply(lambda x: f"{x:.2f}")
             app_display['Rating 1-2 (%)'] = app_display['Rating 1-2 (%)'].round(1).apply(lambda x: f"{x:.1f}%")
             app_display['Rating 4-5 (%)'] = app_display['Rating 4-5 (%)'].round(1).apply(lambda x: f"{x:.1f}%")
             
-            st.dataframe(app_display, use_container_width=True, hide_index=True, height=450)
+            st.dataframe(app_display, width='stretch', hide_index=True, height=430)
             
-        st.markdown("<div style='height: 1.2rem;'></div>", unsafe_allow_html=True)
+        st.markdown("<div style='height: 1.25rem;'></div>", unsafe_allow_html=True)
         
-        # Heatmap Sebaran Klaster per Aplikasi
-        st.markdown("### 🔥 Sebaran Proporsi Klaster pada Masing-masing Aplikasi")
-        st.caption("Menganalisis jenis keluhan atau pujian apa yang paling dominan muncul pada tiap aplikasi.")
+        render_section_title("Sebaran Proporsi Klaster pada Tiap Aplikasi (Heatmap)", "Memetakan jenis topik dan keluhan yang paling dominan muncul pada masing-masing produk.", icon="target")
         
         app_cluster_cross = pd.crosstab(
             df['app_name'], 
@@ -160,28 +167,34 @@ def show(df: pd.DataFrame):
             labels=dict(x="Klaster Semantik", y="Aplikasi", color="% Ulasan"),
             x=app_cluster_cross.columns.tolist(),
             y=app_cluster_cross.index.tolist(),
-            color_continuous_scale="Viridis",
+            color_continuous_scale="Purples",
             text_auto=True,
             aspect="auto"
         )
         fig_heat.update_layout(
             margin=dict(l=10, r=10, t=10, b=10),
-            height=460,
+            height=440,
             plot_bgcolor='rgba(0,0,0,0)',
-            paper_bgcolor='rgba(0,0,0,0)'
+            paper_bgcolor='rgba(0,0,0,0)',
+            font=dict(family="Inter, sans-serif", size=10)
         )
-        st.plotly_chart(fig_heat, use_container_width=True)
+        st.plotly_chart(fig_heat, width='stretch')
         
     # ---------------- TAB 3: PROYEKSI 2D (PCA) ----------------
     with tab3:
-        st.markdown("### 🎯 Visualisasi Proyeksi 2D Menggunakan PCA")
+        render_section_title("Proyeksi Ruang Vektor 2D Menggunakan PCA", "Reduksi dimensi dari embedding 384-d menjadi bidang koordinat 2 dimensi.", icon="compass")
         
-        st.warning("""
-        **Penting (Catatan Metodologi Reduksi Dimensi):**
-        Vektor representasi semantik asli berukuran **384 dimensi** (`paraphrase-multilingual-MiniLM-L12-v2`).
-        Proyeksi 2 dimensi menggunakan Principal Component Analysis (PCA) ini hanya mempertahankan sekitar **16.4% dari total varians data** (PC1: ~8.9%, PC2: ~7.5%).
-        Oleh karena itu, proyeksi 2D **tidak mewakili seluruh geometri ruang embedding asli**, dan adanya tumpang tindih visual (overlap) pada bidang 2D adalah konsekuensi alami dari reduksi dimensi leksikal-semantik.
-        """)
+        info_svg = icon_svg("info", size=16, color="#4F46E5")
+        st.markdown(f"""
+        <div style="background: #F8FAFC; border: 1px solid #E2E8F0; border-left: 3px solid #4F46E5; border-radius: 8px; padding: 0.9rem 1.1rem; margin-bottom: 1.2rem; font-size: 0.85rem; color: #334155; line-height: 1.55;">
+            <div style="font-weight: 600; color: #0F172A; margin-bottom: 0.25rem; display: flex; align-items: center; gap: 0.4rem;">
+                {info_svg} Catatan Metodologi Reduksi Dimensi
+            </div>
+            Vektor representasi semantik asli berukuran <b>384 dimensi</b> (<code>paraphrase-multilingual-MiniLM-L12-v2</code>).
+            Proyeksi 2 dimensi menggunakan Principal Component Analysis (PCA) ini mempertahankan sekitar <b>16.4% dari total varians data</b> (PC1: ~8.9%, PC2: ~7.5%).
+            Oleh karena itu, proyeksi 2D <b>tidak mewakili seluruh geometri ruang embedding asli</b>, dan tumpang tindih visual (overlap) pada bidang 2D adalah konsekuensi alami dari reduksi dimensi teks ulasan.
+        </div>
+        """, unsafe_allow_html=True)
         
         pca_coords = load_pca_coordinates()
         
@@ -198,9 +211,9 @@ def show(df: pd.DataFrame):
             
             p_col1, p_col2 = st.columns([1, 2])
             with p_col1:
-                color_by = st.radio("Warnai Titik Berdasarkan:", ["Klaster Semantik (k=10)", "Rating Skor (1-5)"], horizontal=True)
+                color_by = st.radio("Pewarnaan Titik:", ["Klaster Semantik (k=10)", "Skor Rating (1-5)"], horizontal=True)
             with p_col2:
-                sample_size = st.slider("Jumlah Titik Sampel (untuk responsivitas grafik):", min_value=1000, max_value=len(df), value=3000, step=1000)
+                sample_size = st.slider("Jumlah Titik Sampel (Responsivitas Visual):", min_value=1000, max_value=len(df), value=3000, step=1000)
                 
             sample_plot = plot_df.sample(n=min(sample_size, len(plot_df)), random_state=42)
             
@@ -212,8 +225,7 @@ def show(df: pd.DataFrame):
                     y='PC2',
                     color='Cluster',
                     color_discrete_map=cluster_colors,
-                    hover_data=['Aplikasi', 'Rating', 'Cuplikan Ulasan', 'Nama Klaster'],
-                    title=f"Scatter Plot 2D PCA ({len(sample_plot):,} Sampel Ulasan)"
+                    hover_data=['Aplikasi', 'Rating', 'Cuplikan Ulasan', 'Nama Klaster']
                 )
             else:
                 fig_pca = px.scatter(
@@ -221,31 +233,29 @@ def show(df: pd.DataFrame):
                     x='PC1',
                     y='PC2',
                     color='Rating',
-                    color_continuous_scale='RdYlGn',
-                    hover_data=['Aplikasi', 'Nama Klaster', 'Cuplikan Ulasan'],
-                    title=f"Scatter Plot 2D PCA Berdasarkan Rating ({len(sample_plot):,} Sampel Ulasan)"
+                    color_continuous_scale='Tealgrn',
+                    hover_data=['Aplikasi', 'Nama Klaster', 'Cuplikan Ulasan']
                 )
                 
-            fig_pca.update_traces(marker=dict(size=5, opacity=0.7))
+            fig_pca.update_traces(marker=dict(size=4.5, opacity=0.7))
             fig_pca.update_layout(
-                margin=dict(l=10, r=10, t=40, b=10),
-                height=520,
+                margin=dict(l=10, r=10, t=10, b=10),
+                height=500,
                 plot_bgcolor='rgba(0,0,0,0)',
-                paper_bgcolor='rgba(0,0,0,0)'
+                paper_bgcolor='rgba(0,0,0,0)',
+                font=dict(family="Inter, sans-serif", size=11),
+                xaxis=dict(showgrid=True, gridcolor='#F4F4F5'),
+                yaxis=dict(showgrid=True, gridcolor='#F4F4F5')
             )
-            st.plotly_chart(fig_pca, use_container_width=True)
+            st.plotly_chart(fig_pca, width='stretch')
         else:
-            st.info("Koordinat PCA belum tersedia atau sedang diproses. Silakan jalankan script rekonstruksi.")
+            st.info("Koordinat PCA sedang disiapkan.")
             
     # ---------------- TAB 4: BOXPLOT DISTRIBUSI SKOR ----------------
     with tab4:
-        st.markdown("### 📦 Boxplot Rating pada Setiap Klaster (Sesuai Gambar 2 Laporan)")
-        st.caption("Visualisasi replikasi dari sel terakhir notebook dan Gambar 2 laporan penelitian, menunjukkan rentang kuartil dan median rating per klaster.")
+        render_section_title("Distribusi Rating pada Setiap Klaster (Boxplot)", "Replikasi visualisasi Gambar 2 laporan penelitian, menunjukkan rentang kuartil dan median rating per klaster.", icon="bar-chart-3")
         
         df_box = df.copy()
-        df_box['Klaster'] = df_box['cluster_semantik_10'].apply(
-            lambda x: f"C{x}\n{CLUSTER_METADATA.get(x, {}).get('name', '')[:12]}"
-        )
         
         fig_box = px.box(
             df_box,
@@ -253,23 +263,28 @@ def show(df: pd.DataFrame):
             y='score',
             color='cluster_semantik_10',
             color_discrete_map={k: CLUSTER_METADATA[k]['warna'] for k in range(10)},
-            labels={'cluster_semantik_10': 'ID Klaster (0–9)', 'score': 'Rating (1–5)'},
-            title="Sebaran Rating pada Setiap Klaster (Boxplot)"
+            labels={'cluster_semantik_10': 'ID Klaster (0–9)', 'score': 'Rating (1–5)'}
         )
         fig_box.update_layout(
-            margin=dict(l=10, r=10, t=40, b=20),
-            height=420,
+            margin=dict(l=10, r=10, t=10, b=20),
+            height=400,
             showlegend=False,
-            yaxis=dict(range=[0.5, 5.5], dtick=1),
+            yaxis=dict(range=[0.5, 5.5], dtick=1, showgrid=True, gridcolor='#F4F4F5', tickfont=dict(size=11, color='#71717A')),
+            xaxis=dict(tickfont=dict(size=11, color='#71717A')),
             plot_bgcolor='rgba(0,0,0,0)',
-            paper_bgcolor='rgba(0,0,0,0)'
+            paper_bgcolor='rgba(0,0,0,0)',
+            font=dict(family="Inter, sans-serif", size=11)
         )
-        st.plotly_chart(fig_box, use_container_width=True)
+        st.plotly_chart(fig_box, width='stretch')
         
         st.markdown("""
-        **Interpretasi Boxplot (Tinjauan Penelitian):**
-        - **Cluster 4, 7, dan 8:** Memiliki median rating **4.0** dengan batas kotak kuartil (interquartile range) berkisar antara rating 4 dan 5.
-        - **Cluster 5 (Akun & Sinkronisasi):** Memiliki kotak paling padat di dasar rating 1 hingga 2 (median **2.0**), menegaskan keluhan akut.
-        - **Cluster 1, 0, 2, dan 6:** Semuanya berpusat pada rentang rating 1–2 (median **2.0**).
-        - **Cluster 3 (Manajemen Tugas):** Memiliki sebaran paling merata dengan median **3.0** (mencakup saran fitur dan review netral).
-        """)
+        <div style="background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 8px; padding: 1rem; margin-top: 1rem; font-size: 0.85rem; color: #3F3F46; line-height: 1.6;">
+            <b>Interpretasi Temuan Boxplot (Laporan Penelitian):</b>
+            <ul style="margin: 0.4rem 0 0 0; padding-left: 1.2rem;">
+                <li><b>Cluster 4, 7, dan 8:</b> Memiliki median rating <b>4.0</b> dengan kotak kuartil berada di rentang 4 hingga 5.</li>
+                <li><b>Cluster 5 (Akun & Sinkronisasi):</b> Memiliki kotak paling padat di dasar skor 1 hingga 2 (median <b>2.0</b>).</li>
+                <li><b>Cluster 1, 0, 2, dan 6:</b> Berpusat pada rentang ulasan keluhan rating 1–2 (median <b>2.0</b>).</li>
+                <li><b>Cluster 3 (Manajemen Tugas):</b> Memiliki sebaran paling seimbang dengan median <b>3.0</b>.</li>
+            </ul>
+        </div>
+        """, unsafe_allow_html=True)

@@ -1,192 +1,404 @@
 import streamlit as st
+from modules.icons import icon_svg
 
 def apply_custom_css():
     """
-    Menyuntikkan CSS kustom untuk tampilan dashboard modern, rapi, dan profesional.
-    Menggunakan palet warna harmonis, font Google Inter, card shadow elegan, dan responsive layout.
+    Injeksi CSS Design System Premium AI SaaS (Linear/Vercel/OpenAI inspired):
+    - Background neutral off-white
+    - Tipografi crisp Inter / Plus Jakarta Sans
+    - Card surface putih bersih dengan border halus 1px
+    - Hirarki visual jelas tanpa gradient mencolok / neon glow
+    - Zero emoji - semua indikator menggunakan ikon UI Lucide
     """
     st.markdown("""
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
         
-        html, body, [class*="css"] {
-            font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        :root {
+            --bg-canvas: #FAFAFA;
+            --bg-surface: #FFFFFF;
+            --bg-subtle: #F4F4F5;
+            --border-subtle: #E4E4E7;
+            --border-hover: #D4D4D8;
+            --text-primary: #09090B;
+            --text-secondary: #71717A;
+            --text-muted: #A1A1AA;
+            --brand-primary: #4F46E5;
+            --brand-subtle: #EEF2FF;
+            --brand-border: #C7D2FE;
+            --radius-md: 10px;
+            --radius-lg: 12px;
+            --radius-sm: 6px;
+        }
+
+        /* Base Typography & Background */
+        html, body, [class*="st-"], .stApp {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+            color: var(--text-primary);
         }
         
-        /* Metric / KPI Card Styling */
-        .kpi-card {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(248, 250, 252, 0.9));
-            border: 1px solid #E2E8F0;
-            border-radius: 14px;
-            padding: 1.1rem 1.25rem;
-            box-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.05), 0 2px 4px -2px rgba(15, 23, 42, 0.03);
-            transition: all 0.25s ease;
-            position: relative;
-            overflow: hidden;
+        .stApp {
+            background-color: var(--bg-canvas) !important;
         }
         
-        .kpi-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px -3px rgba(15, 23, 42, 0.08);
-            border-color: #CBD5E1;
+        /* Sidebar Styling (Clean Workspace Style) */
+        section[data-testid="stSidebar"] {
+            background-color: #F8F9FA !important;
+            border-right: 1px solid var(--border-subtle) !important;
         }
         
-        .kpi-title {
-            font-size: 0.82rem;
+        section[data-testid="stSidebar"] .block-container {
+            padding-top: 1.5rem !important;
+            padding-left: 1.25rem !important;
+            padding-right: 1.25rem !important;
+        }
+
+        /* Sidebar Radio Navigation (Pill item style) */
+        section[data-testid="stSidebar"] div[data-testid="stRadio"] > div {
+            gap: 0.25rem !important;
+        }
+        
+        section[data-testid="stSidebar"] div[data-testid="stRadio"] label {
+            background: transparent;
+            padding: 0.45rem 0.75rem !important;
+            border-radius: var(--radius-sm) !important;
+            transition: all 0.15s ease !important;
+            font-size: 0.88rem !important;
+            font-weight: 500 !important;
+            color: var(--text-secondary) !important;
+            border: 1px solid transparent !important;
+            display: flex !important;
+            align-items: center !important;
+        }
+        
+        section[data-testid="stSidebar"] div[data-testid="stRadio"] label:hover {
+            background-color: #F1F2F4 !important;
+            color: var(--text-primary) !important;
+        }
+        
+        section[data-testid="stSidebar"] div[data-testid="stRadio"] label[data-checked="true"] {
+            background-color: #FFFFFF !important;
+            color: var(--brand-primary) !important;
+            font-weight: 600 !important;
+            border-color: var(--border-subtle) !important;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
+        }
+
+        /* Hide Default Radio Circles for sleek tab list look */
+        section[data-testid="stSidebar"] div[data-testid="stRadio"] input[type="radio"] {
+            display: none !important;
+        }
+
+        /* Page Headers */
+        .workspace-header {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.25rem;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+        
+        .workspace-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.72rem;
             font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: #64748B;
-            margin-bottom: 0.35rem;
-        }
-        
-        .kpi-value {
-            font-size: 1.75rem;
-            font-weight: 800;
-            color: #0F172A;
-            line-height: 1.2;
-        }
-        
-        .kpi-subtitle {
-            font-size: 0.78rem;
-            color: #94A3B8;
-            margin-top: 0.35rem;
-        }
-        
-        /* Header Hero Banner */
-        .hero-banner {
-            background: linear-gradient(135deg, #1E293B 0%, #0F172A 100%);
-            border-radius: 16px;
-            padding: 1.6rem 2rem;
-            color: white;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .hero-title {
-            font-size: 1.6rem;
-            font-weight: 800;
-            letter-spacing: -0.02em;
-            margin-bottom: 0.4rem;
-            color: #F8FAFC;
-        }
-        
-        .hero-subtitle {
-            font-size: 0.95rem;
-            color: #94A3B8;
-            line-height: 1.5;
-        }
-        
-        .hero-tag {
-            display: inline-block;
-            background: rgba(59, 130, 246, 0.2);
-            border: 1px solid rgba(59, 130, 246, 0.4);
-            color: #93C5FD;
-            font-size: 0.75rem;
-            font-weight: 600;
-            padding: 0.2rem 0.65rem;
+            letter-spacing: 0.08em;
+            color: var(--brand-primary);
+            background: var(--brand-subtle);
+            border: 1px solid var(--brand-border);
+            padding: 0.2rem 0.55rem;
             border-radius: 9999px;
             margin-bottom: 0.6rem;
         }
         
-        /* Cluster Badges */
-        .cluster-pill {
+        .workspace-title {
+            font-family: 'Plus Jakarta Sans', 'Inter', sans-serif !important;
+            font-size: 1.65rem;
+            font-weight: 700;
+            letter-spacing: -0.025em;
+            color: var(--text-primary);
+            margin: 0 0 0.35rem 0;
+            line-height: 1.25;
+        }
+        
+        .workspace-subtitle {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        /* Premium KPI Metric Cards */
+        .kpi-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 1.15rem 1.25rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+            height: 100%;
+        }
+        
+        .kpi-card:hover {
+            border-color: var(--border-hover);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+        }
+        
+        .kpi-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+        
+        .kpi-label {
+            font-size: 0.76rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-secondary);
+        }
+        
+        .kpi-icon-wrap {
+            width: 28px;
+            height: 28px;
+            border-radius: var(--radius-sm);
+            background: var(--bg-subtle);
             display: inline-flex;
             align-items: center;
-            gap: 0.35rem;
-            padding: 0.25rem 0.65rem;
-            border-radius: 9999px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: #1E293B;
-            background-color: #F1F5F9;
-            border: 1px solid #E2E8F0;
+            justify-content: center;
+            color: var(--text-secondary);
         }
         
-        .cluster-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            display: inline-block;
-        }
-        
-        /* Section Containers */
-        .content-card {
-            background: #FFFFFF;
-            border: 1px solid #E2E8F0;
-            border-radius: 14px;
-            padding: 1.4rem;
-            margin-bottom: 1.25rem;
-            box-shadow: 0 2px 6px -1px rgba(15, 23, 42, 0.04);
-        }
-        
-        .card-header-title {
-            font-size: 1.15rem;
+        .kpi-value {
+            font-family: 'Plus Jakarta Sans', 'Inter', sans-serif !important;
+            font-size: 1.7rem;
             font-weight: 700;
-            color: #0F172A;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+            line-height: 1.2;
             margin-bottom: 0.25rem;
         }
         
-        .card-header-desc {
-            font-size: 0.85rem;
-            color: #64748B;
-            margin-bottom: 1rem;
+        .kpi-context {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
         }
 
-        /* Review Quote Box */
-        .review-quote {
-            background-color: #F8FAFC;
-            border-left: 4px solid #3B82F6;
+        /* Surface Cards / Containers */
+        .saas-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 1.4rem;
+            margin-bottom: 1.25rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+        }
+        
+        .saas-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+        
+        .saas-card-title {
+            font-family: 'Plus Jakarta Sans', sans-serif !important;
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 0;
+        }
+        
+        .saas-card-desc {
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            margin-top: 0.2rem;
+        }
+
+        /* Review Quote Cards */
+        .quote-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-left: 3px solid var(--brand-primary);
+            border-radius: 0 var(--radius-md) var(--radius-md) 0;
             padding: 0.9rem 1.1rem;
-            border-radius: 0 10px 10px 0;
             margin-bottom: 0.75rem;
             font-size: 0.88rem;
-            line-height: 1.5;
-            color: #334155;
+            line-height: 1.55;
+            color: #27272A;
+            transition: all 0.15s ease;
         }
         
-        .review-quote-meta {
+        .quote-card:hover {
+            background: #FAFAFA;
+            border-color: var(--border-hover);
+        }
+        
+        .quote-meta {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            margin-top: 0.5rem;
+            font-size: 0.76rem;
+            color: var(--text-muted);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Keyword Tags */
+        .saas-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            background: #F4F4F5;
+            color: #3F3F46;
             font-size: 0.78rem;
-            color: #64748B;
-            margin-top: 0.4rem;
             font-weight: 500;
-        }
-        
-        /* Pill tags for keywords */
-        .keyword-tag {
-            display: inline-block;
-            background-color: #EEF2FF;
-            color: #4338CA;
-            font-size: 0.78rem;
-            font-weight: 600;
-            padding: 0.25rem 0.6rem;
-            border-radius: 6px;
+            padding: 0.22rem 0.55rem;
+            border-radius: var(--radius-sm);
             margin-right: 0.35rem;
             margin-bottom: 0.35rem;
-            border: 1px solid #E0E7FF;
+            border: 1px solid #E4E4E7;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Semantic Badge */
+        .saas-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.18rem 0.5rem;
+            border-radius: 9999px;
+            font-size: 0.74rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+        }
+
+        /* Clean Streamlit Element Overrides */
+        div[data-testid="stExpander"] {
+            border: 1px solid var(--border-subtle) !important;
+            border-radius: var(--radius-md) !important;
+            background: var(--bg-surface) !important;
+            box-shadow: none !important;
+        }
+        
+        button[kind="primary"] {
+            background-color: var(--text-primary) !important;
+            color: #FFFFFF !important;
+            border: 1px solid var(--text-primary) !important;
+            border-radius: var(--radius-sm) !important;
+            font-weight: 600 !important;
+            font-size: 0.88rem !important;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important;
+            transition: all 0.15s ease !important;
+        }
+        
+        button[kind="primary"]:hover {
+            background-color: #27272A !important;
+            border-color: #27272A !important;
+        }
+        
+        button[kind="secondary"] {
+            background-color: var(--bg-surface) !important;
+            color: var(--text-primary) !important;
+            border: 1px solid var(--border-subtle) !important;
+            border-radius: var(--radius-sm) !important;
+            font-weight: 500 !important;
+            font-size: 0.88rem !important;
+        }
+        
+        button[kind="secondary"]:hover {
+            border-color: var(--border-hover) !important;
+            background-color: var(--bg-subtle) !important;
+        }
+
+        /* Streamlit Tabs Styling */
+        div[data-testid="stTabs"] button[role="tab"] {
+            font-size: 0.88rem !important;
+            font-weight: 500 !important;
+            color: var(--text-secondary) !important;
+            border-bottom: 2px solid transparent !important;
+            padding: 0.5rem 1rem !important;
+        }
+        
+        div[data-testid="stTabs"] button[role="tab"][aria-selected="true"] {
+            color: var(--brand-primary) !important;
+            border-bottom-color: var(--brand-primary) !important;
+            font-weight: 600 !important;
+        }
+
+        /* Clean Alert Boxes */
+        div[data-testid="stAlert"] {
+            border-radius: var(--radius-md) !important;
+            font-size: 0.88rem !important;
+            border: 1px solid var(--border-subtle) !important;
+        }
+        
+        /* Subtle Streamlit Dataframe Table */
+        div[data-testid="stDataFrame"] {
+            border: 1px solid var(--border-subtle) !important;
+            border-radius: var(--radius-md) !important;
+            overflow: hidden;
         }
     </style>
     """, unsafe_allow_html=True)
 
-def render_hero_banner(title: str, subtitle: str, tag: str = "Data Science Project"):
+def render_workspace_header(title: str, subtitle: str, category: str = "AI Review Intelligence", icon: str = "sparkles"):
+    """
+    Header halaman modern bergaya Linear / Vercel dengan eyebrow tag, judul tebal sans-serif, dan subtitle informatif.
+    """
+    category_svg = icon_svg(icon, size=13, color="#4F46E5")
     st.markdown(f"""
-    <div class="hero-banner">
-        <span class="hero-tag">{tag}</span>
-        <div class="hero-title">{title}</div>
-        <div class="hero-subtitle">{subtitle}</div>
+    <div class="workspace-header">
+        <div class="workspace-eyebrow">{category_svg} {category}</div>
+        <h1 class="workspace-title">{title}</h1>
+        <p class="workspace-subtitle">{subtitle}</p>
     </div>
     """, unsafe_allow_html=True)
 
-def render_kpi(title: str, value: str, subtitle: str = "", border_color: str = "#3B82F6"):
+def render_kpi(label: str, value: str, context: str = "", icon: str = "activity", accent_color: str = "#4F46E5"):
+    """
+    Kartu KPI bergaya AI SaaS: ikon Lucide di pojok kanan atas, label uppercase tipis, angka tabular tebal.
+    """
+    icon_html = icon_svg(icon, size=15, color=accent_color)
     st.markdown(f"""
-    <div class="kpi-card" style="border-top: 3px solid {border_color};">
-        <div class="kpi-title">{title}</div>
+    <div class="kpi-card">
+        <div class="kpi-top">
+            <span class="kpi-label">{label}</span>
+            <div class="kpi-icon-wrap">{icon_html}</div>
+        </div>
         <div class="kpi-value">{value}</div>
-        <div class="kpi-subtitle">{subtitle}</div>
+        <div class="kpi-context">{context}</div>
     </div>
     """, unsafe_allow_html=True)
 
-def render_keyword_tags(keywords: list):
-    tags_html = "".join([f'<span class="keyword-tag">#{k}</span>' for k in keywords])
-    st.markdown(f'<div style="margin-top: 0.4rem;">{tags_html}</div>', unsafe_allow_html=True)
+def render_tag_list(tags: list):
+    """
+    Render daftar tag kata kunci dengan ikon tag Lucide tanpa emoji.
+    """
+    tag_icon = icon_svg("tag", size=11, color="#71717A")
+    tags_html = "".join([f'<span class="saas-tag">{tag_icon} {t}</span>' for t in tags])
+    st.markdown(f'<div style="margin-top: 0.35rem; display: flex; flex-wrap: wrap;">{tags_html}</div>', unsafe_allow_html=True)
+
+def render_section_title(title: str, description: str = "", icon: str = None):
+    """
+    Judul section dengan ikon Lucide dan caption subtitle rapi.
+    """
+    icon_html = f"{icon_svg(icon, size=18, color='#4F46E5')} " if icon else ""
+    st.markdown(f"""
+    <div style="margin: 1.6rem 0 0.8rem 0;">
+        <h3 style="font-size: 1.12rem; font-weight: 700; color: #09090B; margin: 0; display: flex; align-items: center; gap: 0.45rem;">
+            {icon_html}<span>{title}</span>
+        </h3>
+        {f'<p style="font-size: 0.82rem; color: #71717A; margin: 0.2rem 0 0 0;">{description}</p>' if description else ''}
+    </div>
+    """, unsafe_allow_html=True)
