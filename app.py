@@ -13,10 +13,9 @@ from modules import (
     page_about
 )
 
-# 1. Konfigurasi Halaman Streamlit (No Emoji in page_icon)
+# 1. Konfigurasi Halaman Streamlit
 st.set_page_config(
     page_title="Clustering Review",
-    page_icon="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f4ca.png",
     layout="wide",
     initial_sidebar_state="expanded"
 )
