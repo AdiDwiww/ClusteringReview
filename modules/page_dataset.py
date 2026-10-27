@@ -122,7 +122,7 @@ def show(df: pd.DataFrame):
             xaxis=dict(showgrid=False),
             yaxis=dict(showgrid=True, gridcolor='#F4F4F5')
         )
-        st.plotly_chart(fig_hist, width='stretch')
+        st.plotly_chart(fig_hist, use_container_width=True)
         
     # 4. Tabel Data dengan Paginasi
     render_section_title("Tabel Data Ulasan", f"Menampilkan catatan ulasan terverifikasi dengan fitur paginasi.", icon="database")
@@ -167,9 +167,9 @@ def show(df: pd.DataFrame):
     st.caption(f"Menampilkan baris **{start_idx + 1}** sampai **{end_idx}** dari **{total_filtered:,}** ulasan.")
     st.dataframe(
         page_data,
-        width='stretch',
         hide_index=True,
-        height=380
+        height=380,
+        use_container_width=True
     )
     
     # Tombol Ekspor CSV Hasil Filter

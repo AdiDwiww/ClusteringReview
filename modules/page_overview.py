@@ -93,7 +93,7 @@ def show(df: pd.DataFrame):
             paper_bgcolor='rgba(0,0,0,0)',
             font=dict(family="Inter, sans-serif", size=12)
         )
-        st.plotly_chart(fig_rating, width='stretch')
+        st.plotly_chart(fig_rating, use_container_width=True)
         
     with col_chart2:
         render_section_title("Proporsi Ulasan per Klaster", "Distribusi ukuran ulasan pada 10 kelompok tematik K-Means.", icon="layers")
@@ -122,7 +122,7 @@ def show(df: pd.DataFrame):
             legend=dict(orientation="v", yanchor="middle", y=0.5, xanchor="left", x=1.02, font=dict(size=11, color='#71717A')),
             font=dict(family="Inter, sans-serif", size=11)
         )
-        st.plotly_chart(fig_donut, width='stretch')
+        st.plotly_chart(fig_donut, use_container_width=True)
         
     st.markdown("<div style='height: 1.25rem;'></div>", unsafe_allow_html=True)
     
@@ -173,7 +173,7 @@ def show(df: pd.DataFrame):
         paper_bgcolor='rgba(0,0,0,0)',
         font=dict(family="Inter, sans-serif", size=11)
     )
-    st.plotly_chart(fig_bar_avg, width='stretch')
+    st.plotly_chart(fig_bar_avg, use_container_width=True)
     
     st.markdown("<div style='height: 1.25rem;'></div>", unsafe_allow_html=True)
     

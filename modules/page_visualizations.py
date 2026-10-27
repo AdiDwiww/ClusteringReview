@@ -56,7 +56,7 @@ def show(df: pd.DataFrame):
             paper_bgcolor='rgba(0,0,0,0)',
             font=dict(family="Inter, sans-serif", size=11)
         )
-        st.plotly_chart(fig_bar_count, width='stretch')
+        st.plotly_chart(fig_bar_count, use_container_width=True)
         
         st.markdown("<div style='height: 1.25rem;'></div>", unsafe_allow_html=True)
         
@@ -99,7 +99,7 @@ def show(df: pd.DataFrame):
             paper_bgcolor='rgba(0,0,0,0)',
             font=dict(family="Inter, sans-serif", size=11)
         )
-        st.plotly_chart(fig_stacked, width='stretch')
+        st.plotly_chart(fig_stacked, use_container_width=True)
         
     # ---------------- TAB 2: KOMPARASI 15 APLIKASI ----------------
     with tab2:
@@ -134,7 +134,7 @@ def show(df: pd.DataFrame):
                 font=dict(family="Inter, sans-serif", size=11),
                 coloraxis_showscale=False
             )
-            st.plotly_chart(fig_app_bar, width='stretch')
+            st.plotly_chart(fig_app_bar, use_container_width=True)
             
         with col_app2:
             st.markdown("""
@@ -149,7 +149,7 @@ def show(df: pd.DataFrame):
             app_display['Rating 1-2 (%)'] = app_display['Rating 1-2 (%)'].round(1).apply(lambda x: f"{x:.1f}%")
             app_display['Rating 4-5 (%)'] = app_display['Rating 4-5 (%)'].round(1).apply(lambda x: f"{x:.1f}%")
             
-            st.dataframe(app_display, width='stretch', hide_index=True, height=430)
+            st.dataframe(app_display, hide_index=True, height=430, use_container_width=True)
             
         st.markdown("<div style='height: 1.25rem;'></div>", unsafe_allow_html=True)
         
@@ -178,7 +178,7 @@ def show(df: pd.DataFrame):
             paper_bgcolor='rgba(0,0,0,0)',
             font=dict(family="Inter, sans-serif", size=10)
         )
-        st.plotly_chart(fig_heat, width='stretch')
+        st.plotly_chart(fig_heat, use_container_width=True)
         
     # ---------------- TAB 3: PROYEKSI 2D (PCA) ----------------
     with tab3:
@@ -247,7 +247,7 @@ def show(df: pd.DataFrame):
                 xaxis=dict(showgrid=True, gridcolor='#F4F4F5'),
                 yaxis=dict(showgrid=True, gridcolor='#F4F4F5')
             )
-            st.plotly_chart(fig_pca, width='stretch')
+            st.plotly_chart(fig_pca, use_container_width=True)
         else:
             st.info("Koordinat PCA sedang disiapkan.")
             
@@ -275,7 +275,7 @@ def show(df: pd.DataFrame):
             paper_bgcolor='rgba(0,0,0,0)',
             font=dict(family="Inter, sans-serif", size=11)
         )
-        st.plotly_chart(fig_box, width='stretch')
+        st.plotly_chart(fig_box, use_container_width=True)
         
         st.markdown("""
         <div style="background: #FFFFFF; border: 1px solid #E4E4E7; border-radius: 8px; padding: 1rem; margin-top: 1rem; font-size: 0.85rem; color: #3F3F46; line-height: 1.6;">

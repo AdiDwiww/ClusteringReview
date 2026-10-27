@@ -81,7 +81,7 @@ def show(df: pd.DataFrame):
         paper_bgcolor='rgba(0,0,0,0)',
         font=dict(family="Inter, sans-serif", size=11)
     )
-    st.plotly_chart(fig_eval, width='stretch')
+    st.plotly_chart(fig_eval, use_container_width=True)
     
     # 3. Tabel Detail Hasil Evaluasi (Tabel 6 Laporan)
     render_section_title("Tabel Evaluasi K-Means pada Embedding Semantik", "Data kuantitatif evaluasi K-Means dari keluaran notebook dan Tabel 6 laporan penelitian.", icon="database")
@@ -103,7 +103,7 @@ def show(df: pd.DataFrame):
     display_eval_table['Ukuran Klaster Terbesar'] = display_eval_table['Ukuran Klaster Terbesar'].apply(lambda x: f"{x:,}")
     display_eval_table['Ukuran Klaster Terkecil'] = display_eval_table['Ukuran Klaster Terkecil'].apply(lambda x: f"{x:,}")
     
-    st.dataframe(display_eval_table, width='stretch', hide_index=True)
+    st.dataframe(display_eval_table, hide_index=True, use_container_width=True)
     
     st.markdown("<div style='height: 1.25rem;'></div>", unsafe_allow_html=True)
     

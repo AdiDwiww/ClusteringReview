@@ -109,7 +109,6 @@ with st.sidebar:
     """, unsafe_allow_html=True)
     
     st.markdown("<div style='height: 1.5rem;'></div>", unsafe_allow_html=True)
-    st.caption("AI Review Intelligence • Streamlit Community Cloud Ready")
 
 # 4. Pemuatan Data dengan Penanganan Error Kuat
 try:
@@ -151,8 +150,6 @@ elif selected_page == "Tentang Penelitian":
 # 6. Footer Konsisten Minimalis
 st.markdown("""
 <div style="margin-top: 3.5rem; padding: 1.5rem 0; border-top: 1px solid #E4E4E7; text-align: center; font-size: 0.78rem; color: #71717A;">
-    <span>Review Intelligence • Productivity App User Clustering Analysis</span>
-    <span style="margin: 0 0.5rem; color: #D4D4D8;">|</span>
-    <span>Sentence Transformers (384d) & K-Means (k=10)</span>
+    <span>Sentence Transformers (384d) &amp; K-Means (k=10)</span>
 </div>
 """, unsafe_allow_html=True)

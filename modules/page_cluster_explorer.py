@@ -49,8 +49,8 @@ def show(df: pd.DataFrame):
         summary_table_df = pd.DataFrame(table_rows)
         st.dataframe(
             summary_table_df,
-            width='stretch',
-            hide_index=True
+            hide_index=True,
+            use_container_width=True
         )
         
         st.markdown("<div style='height: 1.25rem;'></div>", unsafe_allow_html=True)
@@ -168,7 +168,7 @@ def show(df: pd.DataFrame):
             paper_bgcolor='rgba(0,0,0,0)',
             font=dict(family="Inter, sans-serif", size=11)
         )
-        st.plotly_chart(fig_score, width='stretch')
+        st.plotly_chart(fig_score, use_container_width=True)
         
     st.markdown("<div style='height: 1.25rem;'></div>", unsafe_allow_html=True)
     
