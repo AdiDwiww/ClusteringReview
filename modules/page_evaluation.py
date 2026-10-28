@@ -9,7 +9,7 @@ def show(df: pd.DataFrame):
     render_workspace_header(
         title="Evaluasi Kinerja & Pemilihan Klaster",
         subtitle="Analisis koefisien Silhouette, komparasi representasi leksikal TF-IDF vs semantik Sentence Transformers, dan dasar pemilihan k=10.",
-        category="Model Evaluation",
+        category="Academic Dashboard",
         icon="activity"
     )
     

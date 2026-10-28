@@ -6,8 +6,8 @@ from modules.icons import icon_svg
 def show(df: pd.DataFrame):
     render_workspace_header(
         title="Dokumentasi & Metodologi Penelitian",
-        subtitle="Spesifikasi ilmiah, tahapan prapemrosesan teks, arsitektur embedding transformer, hasil utama, keterbatasan, dan rekomendasi industri.",
-        category="Research Documentation",
+        subtitle="Spesifikasi ilmiah, sumber data, prapemrosesan teks, arsitektur Sentence Transformers, K-Means, kesimpulan, dan keterbatasan metodologis.",
+        category="Academic Dashboard",
         icon="book-open"
     )
     
@@ -50,91 +50,109 @@ def show(df: pd.DataFrame):
         
     st.markdown("<div style='height: 1.25rem;'></div>", unsafe_allow_html=True)
     
-    # 2. Latar Belakang & Tujuan
-    render_section_title("1. Latar Belakang & Tujuan Penelitian", "Motivasi penelitian dan perumusan masalah analisis ulasan pengguna.", icon="target")
+    # 2. Sumber Dataset & Karakteristik Korpus
+    render_section_title("1. Sumber Dataset & Karakteristik Korpus", "Distribusi aplikasi dan latar belakang pengumpulan data.", icon="database")
     st.markdown("""
-    Ulasan pengguna pada toko aplikasi digital seperti Google Play Store menyediakan umpan balik berharga bagi pengembang untuk mengevaluasi keandalan sistem, mendeteksi cacat perangkat lunak (*bug*), memahami resistensi biaya langganan, dan memprioritaskan fitur baru.
+    Data ulasan dikumpulkan dari toko aplikasi resmi <b>Google Play Store</b> mencakup <b>15 aplikasi produktivitas populer</b>:
+    <i>Habitica, Todoist, Any.do, HabitBull, Business Calendar 2, TickTick, Planner Pro, Microsoft To Do, TimeTune, Forest, Sectograph, Tasks, LifeRPG, HabitNow, dan Artful Agenda</i>.
     
-    Namun, volume ulasan yang mencapai puluhan ribu ulasan per aplikasi tidak memungkinkan untuk dibaca dan diklasifikasikan secara manual. Oleh sebab itu, diperlukan metode pengelompokan tanpa supervisi (*unsupervised clustering*) untuk memetakan tema-tema ulasan secara otomatis dan objektif.
-    
-    <b>Tujuan Utama Penelitian:</b>
-    1. Membangun pipeline prapemrosesan teks yang efisien untuk ulasan aplikasi produktivitas lintas bahasa.
-    2. Menguji keterbatasan representasi leksikal tradisional (TF-IDF) terhadap representasi embedding semantik modern (*Sentence-BERT*).
-    3. Mengelompokkan 11.713 ulasan ke dalam 10 klaster temantik K-Means.
-    4. Menganalisis korelasi deskriptif antara tema klaster dengan kecenderungan skor rating pengguna.
+    Total data mentah hasil *scraping* berjumlah <b>12.495 ulasan</b> dengan 12 fitur metadata (antara lain <code>content</code>, <code>score</code>, <code>appId</code>, <code>at</code>, <code>thumbsUpCount</code>, <code>reviewCreatedVersion</code>, dll).
     """, unsafe_allow_html=True)
     
     st.markdown("<div style='height: 1.25rem;'></div>", unsafe_allow_html=True)
     
-    # 3. Prapemrosesan Teks
-    render_section_title("2. Karakteristik Dataset & Prapemrosesan (Preprocessing)", "Implementasi tahapan pembersihan data sesuai sel 1–3 pada notebook riset.", icon="database")
+    # 3. Prapemrosesan Teks (Preprocessing)
+    render_section_title("2. Tahapan Prapemrosesan Data (Preprocessing)", "Pipeline pembersihan data terstandarisasi untuk memastikan integritas representasi vektor.", icon="sliders-horizontal")
     st.markdown("""
-    Dataset mencakup 15 aplikasi produktivitas: <i>Habitica, Todoist, Any.do, HabitBull, Business Calendar 2, TickTick, Planner Pro, Microsoft To Do, TimeTune, Forest, Sectograph, Tasks, LifeRPG, HabitNow, dan Artful Agenda</i>.
-    
-    Tahapan prapemrosesan data:
-    1. <b>Pemeriksaan Data Kosong:</b> Kolom <code>reviewCreatedVersion</code> memiliki 2.010 data kosong; <code>replyContent</code> dan <code>repliedAt</code> memiliki 6.090 data kosong. Kolom inti (<code>content</code>, <code>score</code>, <code>appId</code>) berstatus 100% lengkap.
-    2. <b>Pembersihan Duplikasi:</b> Menghapus <b>688 ulasan duplikat</b> berdasarkan kemiripan teks isi ulasan (<code>content</code>).
+    Tahapan prapemrosesan teks dilaksanakan secara berurutan sesuai implementasi notebook penelitian:
+    1. <b>Pemeriksaan Nilai Hilang (Missing Values):</b> Kolom <code>reviewCreatedVersion</code> memiliki 2.010 data kosong; <code>replyContent</code> dan <code>repliedAt</code> memiliki 6.090 data kosong. Kolom primer untuk analisis (<code>content</code>, <code>score</code>, <code>appId</code>) berstatus 100% lengkap tanpa data kosong.
+    2. <b>Pembersihan Duplikasi:</b> Menghapus <b>688 ulasan duplikat</b> berdasarkan kemiripan teks isi ulasan (<code>content</code>), mengurangi data dari 12.495 menjadi 11.807 baris.
     3. <b>Pembersihan Teks (Text Cleaning):</b>
-       - Mengubah seluruh teks ke huruf kecil (<i>case folding</i>).
-       - Menghapus tautan URL web (<code>http/www</code>).
-       - Menghapus karakter selain alfabet latin <code>a-z</code> dan spasi (menyaring emoji, angka, dan simbol tanda baca).
-       - Menormalisasi spasi ganda menjadi spasi tunggal.
-    4. <b>Penyaringan Teks Kosong:</b> Membuang <b>94 ulasan</b> yang kosong setelah simbol/emoji dibersihkan, menghasilkan <b>11.713 ulasan final</b>.
+       - Mengubah seluruh karakter ke huruf kecil (<i>case folding</i>).
+       - Menghapus tautan web (<i>URL regex: http/www</i>).
+       - Menghapus karakter selain alfabet latin <code>a-z</code> dan spasi (menyaring emoji, angka, tanda baca, dan karakter non-alfabet).
+       - Menormalisasi spasi ganda atau spasi berlebih menjadi spasi tunggal yang rapi.
+    4. <b>Penyaringan Teks Kosong Pasca Pembersihan:</b> Membuang <b>94 ulasan</b> yang menjadi string kosong setelah pembersihan emoji/simbol, menghasilkan korpus akhir berkategori valid sebanyak <b>11.713 ulasan</b>.
     """, unsafe_allow_html=True)
     
     st.markdown("<div style='height: 1.25rem;'></div>", unsafe_allow_html=True)
     
-    # 4. Metodologi
-    render_section_title("3. Metodologi Representasi & Algoritma", "Perbandingan matematis antara TF-IDF dan Sentence Transformers.", icon="cpu")
+    # 4. Sentence Transformers & K-Means
+    render_section_title("3. Sentence Transformers & Algoritma K-Means", "Metodologi transformasi semantik dan optimasi pengelompokan tanpa supervisi.", icon="cpu")
     st.markdown("""
-    - <b>TF-IDF (Term Frequency – Inverse Document Frequency):</b> Diuji melalui 3 konfigurasi leksikal. Menghasilkan matriks renggang berdimensi tinggi yang gagal memisahkan topik secara proporsional, di mana satu klaster raksasa menyerap 56% hingga 65% total ulasan dengan skor Silhouette rendah (0.003 – 0.018).
-    - <b>Sentence Transformers (paraphrase-multilingual-MiniLM-L12-v2):</b> Mentransformasikan kalimat utuh menjadi vektor padat berdimensi 384 dengan normalisasi L2. Menggunakan arsitektur Siamese BERT yang dilatih dengan knowledge distillation untuk menangkap makna semantik kalimat secara multibahasa.
-    - <b>K-Means Clustering:</b> Mengelompokkan vektor embedding dengan meminimalkan varians intra-klaster (inersia) menggunakan inisialisasi <code>k-means++</code>, parameter <code>n_init=10</code>, dan <code>random_state=42</code>.
+    - <b>Sentence Transformers (paraphrase-multilingual-MiniLM-L12-v2):</b>
+      Mengekstraksi representasi semantik ulasan ke dalam ruang vektor padat berdimensi <b>384</b>. Menggunakan arsitektur <i>Siamese BERT-networks</i> yang dilatih melalui teknik <i>knowledge distillation</i>, model ini mampu memahami sinonim, konteks kalimat utuh, serta menangani ulasan berbahasa Indonesia maupun Inggris secara simultan tanpa distorsi matriks renggang. Setiap vektor dinormalisasi menggunakan norma Euclidean (L2-norm) sehingga jarak Euclidean berbanding lurus dengan jarak kosinus.
+    - <b>Algoritma K-Means Clustering:</b>
+      Mengelompokkan 11.713 vektor embedding ke dalam <b>k = 10 klaster</b> dengan meminimalkan inersia (<i>within-cluster sum-of-squares</i>). Menggunakan inisialisasi titik pusat <code>k-means++</code> untuk mempercepat konvergensi dan mencegah jebakan lokal minimum, dengan parameter <code>n_init=10</code>, <code>max_iter=300</code>, dan seed reproduktibilitas <code>random_state=42</code>.
+    - <b>Ekstraksi Kata Kunci Leksikal (TF-IDF):</b>
+      Guna mempermudah interpretasi manusia terhadap setiap klaster, diekstraksi kata kunci representatif menggunakan rata-rata bobot TF-IDF (5.000 fitur unigram+bigram, min_df=5) yang dihitung secara independen pada teks ulasan masing-masing klaster.
     """, unsafe_allow_html=True)
     
     st.markdown("<div style='height: 1.25rem;'></div>", unsafe_allow_html=True)
     
-    # 5. Keterbatasan Penelitian
-    render_section_title("4. Keterbatasan Metodologis Penelitian", "Batasan formal yang tercantum dalam laporan penelitian resmi.", icon="alert-triangle")
+    # 5. Kesimpulan Penelitian
+    render_section_title("4. Kesimpulan Penelitian & Rekomendasi Industri", "Sintesis temuan utama dan implikasi manajerial bagi pengembang aplikasi.", icon="check-circle-2")
+    
+    col_k1, col_k2 = st.columns(2)
+    with col_k1:
+        st.markdown("""
+        <div class="saas-card" style="border-left: 3px solid #4F46E5; height: 100%;">
+            <div style="font-weight: 700; color: #09090B; font-size: 0.95rem; margin-bottom: 0.5rem;">
+                Kesimpulan Metodologis & Analitis
+            </div>
+            <ul style="font-size: 0.84rem; color: #3F3F46; line-height: 1.6; padding-left: 1.15rem; margin: 0;">
+                <li style="margin-bottom: 0.45rem;">
+                    <b>Keunggulan Semantik:</b> Representasi Sentence Transformers berhasil memecahkan kelemahan fatal TF-IDF (yang sebelumnya terjebak dalam satu klaster dominan >60%), menghasilkan pembagian klaster yang jauh lebih proporsional (klaster terbesar hanya 17.7%).
+                </li>
+                <li style="margin-bottom: 0.45rem;">
+                    <b>Resolusi Operasional pada k=10:</b> Pemilihan k=10 terbukti optimal dalam membedakan berbagai jenis masalah teknis dan aspek produk yang sebelumnya tercampur jika menggunakan k=2.
+                </li>
+                <li>
+                    <b>Korelasi Topik & Rating:</b> Terdapat korelasi kuat antara topik ulasan dan sentimen kepuasan. Masalah integritas data pengguna (sinkronisasi akun C5) menjadi penyebab rating terendah (1.90 / 5.0).
+                </li>
+            </ul>
+        </div>
+        """, unsafe_allow_html=True)
+        
+    with col_k2:
+        st.markdown("""
+        <div class="saas-card" style="border-left: 3px solid #059669; height: 100%;">
+            <div style="font-weight: 700; color: #09090B; font-size: 0.95rem; margin-bottom: 0.5rem;">
+                Rekomendasi Tindakan bagi Pengembang
+            </div>
+            <ul style="font-size: 0.84rem; color: #3F3F46; line-height: 1.6; padding-left: 1.15rem; margin: 0;">
+                <li style="margin-bottom: 0.45rem;">
+                    <b>Prioritas Stabilitas Sinkronisasi Cloud (Cluster 5):</b> Kegagalan sinkronisasi memicu resistensi pengguna paling tinggi. Diperlukan penanganan offline-first dan audit berkala pada gateway login.
+                </li>
+                <li style="margin-bottom: 0.45rem;">
+                    <b>Uji Regresi Pembaruan Versi (Cluster 1):</b> Hindari rilis pembaruan yang memicu crash aplikasi, karena cluster masalah teknis menyerap 14.2% total ulasan dengan rating 2.11.
+                </li>
+                <li>
+                    <b>Transparansi Kebijakan Fitur Pro (Cluster 2):</b> Hindari mengunci fitur dasar yang sebelumnya gratis menjadi berbayar secara sepihak untuk mencegah gelombang ulasan bintang 1.
+                </li>
+            </ul>
+        </div>
+        """, unsafe_allow_html=True)
+        
+    st.markdown("<div style='height: 1.25rem;'></div>", unsafe_allow_html=True)
+    
+    # 6. Keterbatasan Penelitian
+    render_section_title("5. Keterbatasan Penelitian", "Batasan metodologis formal yang harus diperhatikan dalam menafsirkan temuan.", icon="alert-triangle")
     
     st.markdown("""
     <div style="background: #FFFFFF; border: 1px solid #E4E4E7; border-left: 3px solid #D97706; border-radius: 8px; padding: 1.1rem; font-size: 0.85rem; color: #3F3F46; line-height: 1.65;">
         <ol style="margin: 0; padding-left: 1.2rem;">
             <li style="margin-bottom: 0.5rem;">
-                <b>Pemisahan Geometri Lemah:</b> Seluruh skor Silhouette berada di bawah 0.13 (k=10 bernilai 0.0831). Hal ini membuktikan bahwa teks ulasan pengguna nyata membentuk awan semantik kontinu yang saling bertumpang tindih tanpa batas partisi yang tajam.
+                <b>Pemisahan Geometri Lemah (Awan Semantik Kontinu):</b> Seluruh skor Silhouette berada pada rentang di bawah 0.13 (k=10 bernilai 0.0831). Hal ini mencerminkan karakteristik alami teks ulasan pengguna nyata yang membentuk awan semantik kontinu tanpa batas partisi ruang yang terpisah secara tegas.
             </li>
             <li style="margin-bottom: 0.5rem;">
-                <b>Bukan Model Klasifikasi Sentimen:</b> ID klaster yang dihasilkan K-Means adalah murni kelompok topik semantik tanpa supervisi (*unsupervised*), bukan label sentimen resmi.
+                <b>Sifat Unsupervised (Bukan Klasifikasi Sentimen):</b> ID klaster yang dihasilkan K-Means murni kelompok kemiripan topik semantik tanpa supervisi, bukan label sentimen formal (positif/negatif kaku).
             </li>
             <li style="margin-bottom: 0.5rem;">
-                <b>Generalisasi Lintas 15 Aplikasi:</b> Korpus data mencakup ulasan dari 15 aplikasi berbeda secara simultan, sehingga tema yang terbentuk merepresentasikan tren industri secara agregat dan bukan spesifik arsitektur satu produk saja.
+                <b>Generalisasi Agregat Lintas 15 Aplikasi:</b> Korpus data mencakup ulasan dari 15 aplikasi berbeda secara gabungan, sehingga klaster mencerminkan dinamika industri aplikasi produktivitas secara makro, bukan arsitektur internal satu aplikasi spesifik.
             </li>
             <li>
-                <b>Subjektivitas Interpretasi:</b> Pelabelan nama tema dilakukan secara kualitatif oleh peneliti berdasarkan interpretasi kata kunci TF-IDF teratas dan sampel ulasan autentik.
-            </li>
-        </ol>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    st.markdown("<div style='height: 1.25rem;'></div>", unsafe_allow_html=True)
-    
-    # 6. Rekomendasi
-    render_section_title("5. Rekomendasi Praktis bagi Pengembang Produk", "Insight yang dapat ditindaklanjuti oleh tim engineering dan product management.", icon="check-circle-2")
-    
-    st.markdown("""
-    <div style="background: #FFFFFF; border: 1px solid #E4E4E7; border-left: 3px solid #059669; border-radius: 8px; padding: 1.1rem; font-size: 0.85rem; color: #3F3F46; line-height: 1.65;">
-        <ol style="margin: 0; padding-left: 1.2rem;">
-            <li style="margin-bottom: 0.5rem;">
-                <b>Prioritas Keandalan Sinkronisasi Akun (Cluster 5):</b> Kegagalan sinkronisasi cloud menimbulkan sentimen paling negatif (rata-rata rating 1.90) karena risiko hilangnya data tugas harian pengguna.
-            </li>
-            <li style="margin-bottom: 0.5rem;">
-                <b>Audit Regresi Pasca Pembaruan (Cluster 1):</b> Pengujian kompatibilitas rilis update harus diperketat untuk mencegah lonjakan ulasan bintang 1 akibat *crash* mendadak.
-            </li>
-            <li style="margin-bottom: 0.5rem;">
-                <b>Edukasi Izin Sistem Operasi untuk Pengingat (Cluster 6):</b> Sediakan panduan in-app mengenai optimasi baterai OS agar alarm pengingat tidak terbunuh di latar belakang.
-            </li>
-            <li>
-                <b>Transparansi Kebijakan Fitur Pro (Cluster 2):</b> Hindari pemindahan fitur gratis yang sudah ada ke dalam skema berbayar secara sepihak untuk meminimalkan friksi pengguna.
+                <b>Subjektivitas Interpretasi Kualitatif:</b> Pelabelan nama klaster dan penafsiran tema dilakukan secara kualitatif oleh peneliti berdasarkan inspeksi kata kunci TF-IDF teratas dan sampel ulasan autentik.
             </li>
         </ol>
     </div>
@@ -143,8 +161,8 @@ def show(df: pd.DataFrame):
     st.markdown("<div style='height: 1.5rem;'></div>", unsafe_allow_html=True)
     
     st.caption("""
-    Referensi Literatur:
-    Arthur, D., & Vassilvitskii, S. (2007). k-means++: The advantages of careful seeding. SODA '07.
-    Reimers, N., & Gurevych, I. (2019). Sentence-BERT: Sentence embeddings using Siamese BERT-networks. EMNLP-IJCNLP.
-    Reimers, N., & Gurevych, I. (2020). Making monolingual sentence embeddings multilingual using knowledge distillation. EMNLP.
+    Referensi Literatur Utama:
+    • Arthur, D., & Vassilvitskii, S. (2007). k-means++: The advantages of careful seeding. SODA '07.
+    • Reimers, N., & Gurevych, I. (2019). Sentence-BERT: Sentence embeddings using Siamese BERT-networks. EMNLP-IJCNLP.
+    • Reimers, N., & Gurevych, I. (2020). Making monolingual sentence embeddings multilingual using knowledge distillation. EMNLP.
     """)

@@ -5,17 +5,14 @@ from modules.data_loader import load_dataset
 from modules.icons import icon_svg
 from modules import (
     page_overview,
-    page_dataset,
     page_cluster_explorer,
-    page_visualizations,
-    page_test_review,
     page_evaluation,
     page_about
 )
 
 # 1. Konfigurasi Halaman Streamlit
 st.set_page_config(
-    page_title="Clustering Review",
+    page_title="Clustering Review Dashboard",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -37,18 +34,18 @@ with st.sidebar:
                 <div style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.05rem; font-weight: 700; color: #09090B; letter-spacing: -0.02em; line-height: 1.2;">
                     Clustering Review
                 </div>
+                <div style="font-size: 0.72rem; color: #71717A; font-weight: 500;">
+                    Academic Dashboard
+                </div>
             </div>
         </div>
     </div>
     """, unsafe_allow_html=True)
     
-    # Menu Navigasi 7 Halaman (Clean Text, No Emojis)
+    # Menu Navigasi 4 Halaman Utama (Tanpa Emoji)
     menu_options = [
         "Overview",
-        "Eksplorasi Data",
-        "Cluster Explorer",
-        "Visualisasi",
-        "Prediksi Ulasan",
+        "Eksplorasi Cluster",
         "Evaluasi Model",
         "Tentang Penelitian"
     ]
@@ -126,17 +123,11 @@ except Exception as e:
     """, unsafe_allow_html=True)
     st.stop()
 
-# 5. Routing Halaman
+# 5. Routing 4 Halaman Utama
 if selected_page == "Overview":
     page_overview.show(df)
-elif selected_page == "Eksplorasi Data":
-    page_dataset.show(df)
-elif selected_page == "Cluster Explorer":
+elif selected_page == "Eksplorasi Cluster":
     page_cluster_explorer.show(df)
-elif selected_page == "Visualisasi":
-    page_visualizations.show(df)
-elif selected_page == "Prediksi Ulasan":
-    page_test_review.show(df)
 elif selected_page == "Evaluasi Model":
     page_evaluation.show(df)
 elif selected_page == "Tentang Penelitian":

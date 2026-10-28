@@ -8,9 +8,9 @@ from modules.icons import icon_svg
 
 def show(df: pd.DataFrame):
     render_workspace_header(
-        title="Clustering Review Workspace",
+        title="Overview Penelitian & Dataset",
         subtitle="Analisis clustering ulasan dari 15 aplikasi produktivitas Google Play Store menggunakan representasi Sentence Transformers dan algoritma K-Means (k=10).",
-        category="Analytics Overview",
+        category="Academic Dashboard",
         icon="layout-dashboard"
     )
     
@@ -58,8 +58,8 @@ def show(df: pd.DataFrame):
         
     st.markdown("<div style='height: 1.25rem;'></div>", unsafe_allow_html=True)
     
-    # 2. Charts Row: Distribusi Rating & Proporsi Klaster
-    col_chart1, col_chart2 = st.columns([1, 1])
+    # 2. Charts Row: Distribusi Rating & Jumlah Ulasan per Klaster
+    col_chart1, col_chart2 = st.columns([1, 1.15])
     
     with col_chart1:
         render_section_title("Distribusi Rating Keseluruhan", "Sebaran frekuensi rating bintang 1 hingga 5 pada dataset.", icon="bar-chart-3")
@@ -68,7 +68,7 @@ def show(df: pd.DataFrame):
         rating_counts['Persentase'] = (rating_counts['Jumlah'] / total_reviews * 100).round(1)
         rating_counts['Label'] = rating_counts['Rating'].apply(lambda x: f"Skor {x}")
         
-        # Modern neutral-semantic palette
+        # Palet warna semantik netral & elegan
         colors_rating = ['#EF4444', '#F97316', '#EAB308', '#22C55E', '#10B981']
         
         fig_rating = go.Figure(data=[
@@ -86,7 +86,7 @@ def show(df: pd.DataFrame):
         ])
         fig_rating.update_layout(
             margin=dict(l=10, r=10, t=10, b=10),
-            height=320,
+            height=340,
             xaxis=dict(title="", showgrid=False, tickfont=dict(size=12, color='#71717A')),
             yaxis=dict(title="Jumlah Ulasan", showgrid=True, gridcolor='#F4F4F5', tickfont=dict(size=11, color='#71717A')),
             plot_bgcolor='rgba(0,0,0,0)',
@@ -96,33 +96,41 @@ def show(df: pd.DataFrame):
         st.plotly_chart(fig_rating, use_container_width=True)
         
     with col_chart2:
-        render_section_title("Proporsi Ulasan per Klaster", "Distribusi ukuran ulasan pada 10 kelompok tematik K-Means.", icon="layers")
-        cluster_summary = df.groupby('cluster_semantik_10').size().reset_index(name='Jumlah')
-        cluster_summary['Klaster'] = cluster_summary['cluster_semantik_10'].apply(
+        render_section_title("Jumlah Ulasan per Klaster", "Ukuran dan proporsi ulasan pada 10 kelompok tematik K-Means.", icon="layers")
+        c_counts = df.groupby('cluster_semantik_10').size().reset_index(name='Jumlah')
+        c_counts['Klaster'] = c_counts['cluster_semantik_10'].apply(
             lambda x: f"C{x}: {CLUSTER_METADATA.get(x, {}).get('name', f'Cluster {x}')[:20]}"
         )
-        cluster_summary['Warna'] = cluster_summary['cluster_semantik_10'].apply(
-            lambda x: CLUSTER_METADATA.get(x, {}).get('warna', '#6B7280')
+        c_counts['Persentase'] = (c_counts['Jumlah'] / total_reviews * 100).round(1)
+        c_counts['Warna'] = c_counts['cluster_semantik_10'].apply(
+            lambda x: CLUSTER_METADATA.get(x, {}).get('warna', '#4F46E5')
         )
+        c_counts = c_counts.sort_values('Jumlah', ascending=True)
         
-        fig_donut = go.Figure(data=[
-            go.Pie(
-                labels=cluster_summary['Klaster'],
-                values=cluster_summary['Jumlah'],
-                hole=0.55,
-                marker=dict(colors=cluster_summary['Warna'].tolist(), line=dict(color='#FFFFFF', width=2)),
-                textinfo='percent',
-                hovertemplate="<b>%{label}</b><br>Jumlah: %{value:,} ulasan<br>Proporsi: %{percent}<extra></extra>"
+        fig_cluster_bar = go.Figure(data=[
+            go.Bar(
+                y=c_counts['Klaster'],
+                x=c_counts['Jumlah'],
+                orientation='h',
+                text=[f"{n:,} ({p}%)" for n, p in zip(c_counts['Jumlah'], c_counts['Persentase'])],
+                textposition='outside',
+                marker=dict(
+                    color=c_counts['Warna'].tolist(),
+                    line=dict(color='#E4E4E7', width=1)
+                ),
+                hovertemplate="<b>%{y}</b><br>Jumlah: %{x:,} ulasan (%{text})<extra></extra>"
             )
         ])
-        fig_donut.update_layout(
-            margin=dict(l=10, r=10, t=10, b=10),
-            height=320,
-            showlegend=True,
-            legend=dict(orientation="v", yanchor="middle", y=0.5, xanchor="left", x=1.02, font=dict(size=11, color='#71717A')),
+        fig_cluster_bar.update_layout(
+            margin=dict(l=10, r=50, t=10, b=10),
+            height=340,
+            xaxis=dict(title="Jumlah Ulasan", showgrid=True, gridcolor='#F4F4F5', tickfont=dict(size=11, color='#71717A')),
+            yaxis=dict(title="", tickfont=dict(size=11, color='#71717A')),
+            plot_bgcolor='rgba(0,0,0,0)',
+            paper_bgcolor='rgba(0,0,0,0)',
             font=dict(family="Inter, sans-serif", size=11)
         )
-        st.plotly_chart(fig_donut, use_container_width=True)
+        st.plotly_chart(fig_cluster_bar, use_container_width=True)
         
     st.markdown("<div style='height: 1.25rem;'></div>", unsafe_allow_html=True)
     

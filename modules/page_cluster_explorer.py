@@ -7,16 +7,16 @@ from modules.icons import icon_svg
 
 def show(df: pd.DataFrame):
     render_workspace_header(
-        title="Eksplorasi Tematik Klaster (k=10)",
-        subtitle="Analisis granular 10 klaster semantik: metrik rating, kata kunci bobot TF-IDF, interpretasi tema, dan sampel ulasan autentik.",
-        category="Cluster Exploration",
+        title="Eksplorasi Tematik Klaster",
+        subtitle="Analisis terperinci tiap klaster: jumlah ulasan, rata-rata rating, kata kunci dominan TF-IDF, serta contoh ulasan asli pengguna.",
+        category="Academic Dashboard",
         icon="layers"
     )
     
     # 1. Pilihan Klaster
-    options = ["Semua Klaster (Ringkasan Komparatif)"] + [
+    options = [
         f"Cluster {i}: {CLUSTER_METADATA[i]['name']}" for i in range(10)
-    ]
+    ] + ["Semua Klaster (Ringkasan Komparatif)"]
     
     selected_option = st.selectbox(
         "Pilih Klaster Analisis:",
